@@ -53,7 +53,7 @@ else
     --unattended \
     --replace
 
-  cp -p -r "/actions-runner/_diag" "/actions-runner/svc.sh" /actions-runner/.[^.]* "${RUNNER_STATE_DIR}"
+  cp -p -r "/actions-runner/_diag" "/actions-runner/svc.sh" /actions-runner/.[!.]* "${RUNNER_STATE_DIR}"
 fi
 
 unset ACCESS_TOKEN
