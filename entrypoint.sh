@@ -43,7 +43,7 @@ else
     "${AUTH_URL}" \
     | jq -r '.token')
 
-  ./config.sh \
+  RUNNER_ALLOW_RUNASROOT=1 ./config.sh \
     --url "${RUNNER_URL}" \
     --token "${RUNNER_TOKEN}" \
     --name "${RUNNER_NAME}" \
