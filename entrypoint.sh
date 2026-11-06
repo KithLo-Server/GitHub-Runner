@@ -26,6 +26,8 @@ case "${RUNNER_SCOPE}" in
     ;;
 esac
 
+mkdir -p "${RUNNER_WORK_DIR}"
+mkdir -p "${RUNNER_STATE_DIR}"
 cp -p -r "${RUNNER_STATE_DIR}/." "/actions-runner"
 
 if [ -f "/actions-runner/.runner" ]; then
