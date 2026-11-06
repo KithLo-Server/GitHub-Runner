@@ -30,6 +30,8 @@ mkdir -p "${RUNNER_WORK_DIR}"
 mkdir -p "${RUNNER_STATE_DIR}"
 cp -p -r "${RUNNER_STATE_DIR}/." "/actions-runner"
 
+export RUNNER_ALLOW_RUNASROOT=1
+
 if [ -f "/actions-runner/.runner" ]; then
   echo "The runner has already been configured"
 else
@@ -43,7 +45,7 @@ else
     "${AUTH_URL}" \
     | jq -r '.token')
 
-  RUNNER_ALLOW_RUNASROOT=1 ./config.sh \
+  ./config.sh \
     --url "${RUNNER_URL}" \
     --token "${RUNNER_TOKEN}" \
     --name "${RUNNER_NAME}" \
