@@ -21,9 +21,9 @@ RUN apt-get update && apt-get install -y \
     docker-compose-plugin \
     && rm -rf /var/lib/apt/lists/*
 
-RUN curl -o actions-runner-linux-arm-2.338.2.tar.gz -L https://github.com/actions/runner/releases/download/v2.338.2/actions-runner-linux-arm-2.338.2.tar.gz && \
-    echo "9677d6171f2c60040efc9111c4e7dd34fdd714cd7b24b171a7925eba7d09c5fa  actions-runner-linux-arm-2.338.2.tar.gz" | shasum -a 256 -c && \
-    tar xzf ./actions-runner-linux-arm-2.338.2.tar.gz && \
+RUN curl -o actions-runner-linux-arm64-2.338.2.tar.gz -L https://github.com/actions/runner/releases/download/v2.338.2/actions-runner-linux-arm64-2.338.2.tar.gz && \
+    echo "670adb2f268fe21dcbb58b3db0e0aa9d5b3bddfe2c651481336e561ff86de945  actions-runner-linux-arm64-2.338.2.tar.gz" | shasum -a 256 -c && \
+    tar xzf ./actions-runner-linux-arm64-2.338.2.tar.gz && \
     bash ./bin/installdependencies.sh
 
 COPY --chmod=0755 entrypoint.sh /usr/local/bin/entrypoint.sh
