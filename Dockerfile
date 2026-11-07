@@ -39,7 +39,9 @@ RUN git config --global --add safe.directory /actions-runner && \
     git config --global user.email "actions-runner@localhost" && \
     git init -q . && \
     git add -A && \
-    git commit -qm "baseline"
+    git commit -qm "baseline" && \
+    git config --global --unset user.name && \
+    git config --global --unset user.email
 
 COPY --chmod=0755 entrypoint.sh /usr/local/bin/entrypoint.sh
 

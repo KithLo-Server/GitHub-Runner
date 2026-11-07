@@ -131,7 +131,7 @@ run_runner() {
 if [ -f "${PATCH_FILE}" ]; then
   echo "Restoring runner configuration from patch"
 
-  git apply --binary "${PATCH_FILE}"
+  git apply --whitespace=nowarn --binary "${PATCH_FILE}"
   sh "${PERMS_FILE}"
 else
   configure_runner
