@@ -31,7 +31,7 @@ RUN apt-get update && apt-get install -y \
 RUN curl -o actions-runner-linux-arm64-2.338.2.tar.gz -L https://github.com/actions/runner/releases/download/v2.338.2/actions-runner-linux-arm64-2.338.2.tar.gz && \
     echo "670adb2f268fe21dcbb58b3db0e0aa9d5b3bddfe2c651481336e561ff86de945  actions-runner-linux-arm64-2.338.2.tar.gz" | shasum -a 256 -c && \
     tar xzf ./actions-runner-linux-arm64-2.338.2.tar.gz && \
-    bash ./bin/installdependencies.sh && \
+    chmod +x ./bin/installdependencies.sh && ./bin/installdependencies.sh && \
     rm -f ./actions-runner-linux-arm64-2.338.2.tar.gz
 
 RUN git init -q . && \
@@ -41,5 +41,7 @@ RUN git init -q . && \
     git commit -qm "baseline"
 
 COPY --chmod=0755 entrypoint.sh /usr/local/bin/entrypoint.sh
+
+ENV RUNNER_ALLOW_RUNASROOT=1
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

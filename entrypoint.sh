@@ -29,10 +29,8 @@ esac
 mkdir -p "${RUNNER_WORK_DIR}"
 mkdir -p "${RUNNER_STATE_DIR}"
 
-export RUNNER_ALLOW_RUNASROOT=1
-
 PATCH_FILE="${RUNNER_STATE_DIR}/runner-config.patch"
-PERMS_FILE="${RUNNER_STATE_DIR}/restore_perms.sh"
+PERMS_FILE="${RUNNER_STATE_DIR}/runner-perms.sh"
 
 fetch_token() {
   curl -fsSL \
