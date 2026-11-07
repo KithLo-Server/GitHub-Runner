@@ -34,9 +34,10 @@ RUN curl -o actions-runner-linux-arm64-2.338.2.tar.gz -L https://github.com/acti
     chmod +x ./bin/installdependencies.sh && ./bin/installdependencies.sh && \
     rm -f ./actions-runner-linux-arm64-2.338.2.tar.gz
 
-RUN git init -q . && \
-    git config user.name "actions-runner" && \
-    git config user.email "actions-runner@localhost" && \
+RUN git config --global --add safe.directory /actions-runner && \
+    git config --global user.name "actions-runner" && \
+    git config --global user.email "actions-runner@localhost" && \
+    git init -q . && \
     git add -A && \
     git commit -qm "baseline"
 

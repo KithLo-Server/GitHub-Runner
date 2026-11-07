@@ -92,14 +92,9 @@ fi
 
 set +e
 (run_runner)
-RUNNER_EXIT=$?
 set -e
 
-if [ "${RUNNER_EXIT}" -ne 1 ]; then
-  exit "${RUNNER_EXIT}"
-fi
-
-echo "runner exited with 1, reconfiguring and retrying once"
+echo "runner exited, reconfiguring and retrying"
 
 ./config.sh remove --token "$(fetch_token)" || echo "warning: config.sh remove failed"
 
