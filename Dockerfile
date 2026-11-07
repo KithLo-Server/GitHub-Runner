@@ -5,6 +5,7 @@ WORKDIR /actions-runner
 RUN apt-get update && apt-get install -y \
     ca-certificates \
     curl \
+    git \
     gnupg \
     jq \
     && install -m 0755 -d /etc/apt/keyrings \
@@ -32,6 +33,12 @@ RUN curl -o actions-runner-linux-arm64-2.338.2.tar.gz -L https://github.com/acti
     tar xzf ./actions-runner-linux-arm64-2.338.2.tar.gz && \
     bash ./bin/installdependencies.sh && \
     rm -f ./actions-runner-linux-arm64-2.338.2.tar.gz
+
+RUN git init -q . && \
+    git config user.name "actions-runner" && \
+    git config user.email "actions-runner@localhost" && \
+    git add -A && \
+    git commit -qm "baseline"
 
 COPY --chmod=0755 entrypoint.sh /usr/local/bin/entrypoint.sh
 

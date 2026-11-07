@@ -28,12 +28,17 @@ esac
 
 mkdir -p "${RUNNER_WORK_DIR}"
 mkdir -p "${RUNNER_STATE_DIR}"
-cp -p -r "${RUNNER_STATE_DIR}/." "/actions-runner"
 
 export RUNNER_ALLOW_RUNASROOT=1
 
-if [ -f "/actions-runner/.runner" ]; then
-  echo "The runner has already been configured"
+PATCH_FILE="${RUNNER_STATE_DIR}/runner-config.patch"
+PERMS_FILE="${RUNNER_STATE_DIR}/restore_perms.sh"
+
+if [ -f "${PATCH_FILE}" ]; then
+  echo "Restoring runner configuration from patch"
+
+  git apply --binary "${PATCH_FILE}"
+  sh "${PERMS_FILE}"
 else
   echo "Configuring"
 
@@ -55,7 +60,16 @@ else
     --unattended \
     --replace
 
-  cp -p -r "/actions-runner/_diag" "/actions-runner/svc.sh" /actions-runner/.[!.]* "${RUNNER_STATE_DIR}"
+  git add -A
+  git diff --cached --binary > "${PATCH_FILE}"
+
+  git diff --cached --name-only | while IFS= read -r file; do
+    if [ -e "${file}" ]; then
+      stat -c 'chown %U:%G "%n" && chmod %a "%n"' "${file}"
+    fi
+  done > "${PERMS_FILE}"
+
+  chmod 600 "${PATCH_FILE}" "${PERMS_FILE}"
 fi
 
 unset ACCESS_TOKEN
