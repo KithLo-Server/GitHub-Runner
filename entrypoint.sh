@@ -2,7 +2,6 @@
 set -eu
 
 : "${ACCESS_TOKEN:?ACCESS_TOKEN is required}"
-: "${RUNNER_NAME:?RUNNER_NAME is required}"
 : "${RUNNER_SCOPE:?RUNNER_SCOPE is required (must be 'repo' or 'org')}"
 : "${RUNNER_WORK_DIR:?RUNNER_WORK_DIR is required}"
 : "${RUNNER_STATE_DIR:?RUNNER_STATE_DIR is required}"
@@ -25,6 +24,52 @@ case "${RUNNER_SCOPE}" in
     exit 1
     ;;
 esac
+
+if [ -n "${RUNNER_STACK_NAME:-}" ] || [ -n "${RUNNER_STACK_SIZE:-}" ]; then
+  if [ -z "${RUNNER_STACK_NAME:-}" ]; then
+    echo "RUNNER_STACK_NAME is required when RUNNER_STACK_SIZE is set" >&2
+    exit 1
+  fi
+  if [ -z "${RUNNER_STACK_SIZE:-}" ]; then
+    echo "RUNNER_STACK_SIZE is required when RUNNER_STACK_NAME is set" >&2
+    exit 1
+  fi
+
+  case "${RUNNER_STACK_SIZE}" in
+    ''|*[!0-9]*)
+      echo "RUNNER_STACK_SIZE must be a positive integer, got '${RUNNER_STACK_SIZE}'" >&2
+      exit 1
+      ;;
+  esac
+  if [ "${RUNNER_STACK_SIZE}" -le 0 ]; then
+    echo "RUNNER_STACK_SIZE must be a positive integer, got '${RUNNER_STACK_SIZE}'" >&2
+    exit 1
+  fi
+
+  while :; do
+    CONTAINERS="$(docker ps -q --filter "label=RUNNER_STACK_NAME=${RUNNER_STACK_NAME}")"
+    COUNT="$(printf '%s\n' "${CONTAINERS}" | sed '/^$/d' | wc -l)"
+    [ "${COUNT}" -eq "${RUNNER_STACK_SIZE}" ] && break
+    echo "waiting for ${RUNNER_STACK_SIZE} stack containers, found ${COUNT}"
+    sleep 5
+  done
+
+  CONTAINERS="$(printf '%s\n' "${CONTAINERS}" | sort)"
+
+  printf '%s\n' "${CONTAINERS}" | grep -qx "${HOSTNAME}" || {
+    echo "runner container ${HOSTNAME} not found in stack" >&2
+    exit 1
+  }
+
+  INDEX="$(printf '%s\n' "${CONTAINERS}" | grep -nx "${HOSTNAME}" | cut -d: -f1)"
+
+  RUNNER_NAME="${RUNNER_STACK_NAME}-${INDEX}"
+  RUNNER_LABELS="${RUNNER_LABELS},${RUNNER_STACK_NAME},${RUNNER_NAME}"
+  RUNNER_WORK_DIR="${RUNNER_WORK_DIR}/${RUNNER_NAME}"
+  RUNNER_STATE_DIR="${RUNNER_STATE_DIR}/${RUNNER_NAME}"
+else
+  : "${RUNNER_NAME:?RUNNER_NAME is required}"
+fi
 
 mkdir -p "${RUNNER_WORK_DIR}"
 mkdir -p "${RUNNER_STATE_DIR}"
