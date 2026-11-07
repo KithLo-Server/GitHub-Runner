@@ -69,17 +69,7 @@ configure_runner() {
   chmod 600 "${PATCH_FILE}" "${PERMS_FILE}"
 }
 
-if [ -f "${PATCH_FILE}" ]; then
-  echo "Restoring runner configuration from patch"
-
-  git apply --binary "${PATCH_FILE}"
-  sh "${PERMS_FILE}"
-else
-  configure_runner
-fi
-
-set +e
-(
+run_runner() {
   unset ACCESS_TOKEN
   unset RUNNER_NAME
   unset RUNNER_SCOPE
@@ -91,7 +81,19 @@ set +e
   unset RUNNER_LABELS
 
   ./run.sh
-)
+}
+
+if [ -f "${PATCH_FILE}" ]; then
+  echo "Restoring runner configuration from patch"
+
+  git apply --binary "${PATCH_FILE}"
+  sh "${PERMS_FILE}"
+else
+  configure_runner
+fi
+
+set +e
+(run_runner)
 RUNNER_EXIT=$?
 set -e
 
@@ -108,16 +110,4 @@ git clean -fdxq
 
 configure_runner
 
-(
-  unset ACCESS_TOKEN
-  unset RUNNER_NAME
-  unset RUNNER_SCOPE
-  unset RUNNER_WORK_DIR
-  unset RUNNER_STATE_DIR
-  unset RUNNER_GROUP
-  unset REPO_NAME
-  unset ORG_NAME
-  unset RUNNER_LABELS
-
-  ./run.sh
-)
+run_runner
