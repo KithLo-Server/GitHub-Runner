@@ -73,6 +73,8 @@ else
   : "${RUNNER_NAME:?RUNNER_NAME is required}"
 fi
 
+echo "Name: $RUNNER_NAME"
+
 mkdir -p "${RUNNER_WORK_DIR}"
 mkdir -p "${RUNNER_STATE_DIR}"
 
